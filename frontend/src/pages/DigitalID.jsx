@@ -11,9 +11,13 @@ const DigitalID = () => {
     const [timeLeft, setTimeLeft] = useState(55);
     const [error, setError] = useState(null);
 
-    // Pulling student roll from local storage or auth context
-    const storedUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
-    const rollNo = storedUser.roll_no || "22CSE01";
+    // Pulling student roll from local storage (snsUser) or default for testing
+    const rollNo = (() => {
+        try {
+            const data = JSON.parse(localStorage.getItem('snsUser') || '{}');
+            return data.rollNumber || "22CSE01";
+        } catch (e) { return "22CSE01"; }
+    })();
 
     const fetchIDData = async () => {
         try {
@@ -34,7 +38,7 @@ const DigitalID = () => {
             setTimeLeft(55);
         } catch (err) {
             console.error("Sync Error:", err);
-            setError(err.response?.data?.detail || "Connection to Server Lost");
+            setError(err.response?.data?.detail || "ID Record Not Found in Campus DB");
         }
     };
 
@@ -92,11 +96,17 @@ const DigitalID = () => {
 
                 {/* BRANDING HEADER */}
                 <div className="p-8 pb-4 text-center">
-                    <div className="flex justify-center mb-3 text-orange-500">
-                        <ShieldCheck size={36} strokeWidth={2.5} />
+                    {/* STUDENT PHOTO - NEW FEATURE */}
+                    <div className="relative w-24 h-24 mx-auto mb-4">
+                        <div className="absolute inset-0 bg-orange-500 rounded-2xl rotate-6 opacity-20"></div>
+                        <img
+                            src={studentData.photo || "https://static.vecteezy.com/system/resources/previews/005/544/718/original/university-student-graduate-icon-free-vector.jpg"}
+                            alt="Profile"
+                            className="w-full h-full object-cover rounded-2xl border-4 border-white shadow-lg relative z-10"
+                        />
                     </div>
-                    <h2 className="text-2xl font-black tracking-tighter uppercase leading-none">SNS SMART ID</h2>
-                    <p className="text-[10px] font-bold text-gray-400 mt-2 tracking-[0.3em] uppercase">Identity Verification System</p>
+                    <h2 className="text-xl font-black tracking-tighter uppercase leading-none">{studentData.student_name}</h2>
+                    <p className="text-[9px] font-bold text-orange-600 mt-1 tracking-[0.2em] uppercase">{studentData.dept || "Department of Engineering"}</p>
                 </div>
 
                 {/* DYNAMIC QR CODE BOX */}
@@ -121,30 +131,28 @@ const DigitalID = () => {
                 </div>
 
                 {/* STUDENT PROFILE & WALLET SECTION */}
-                <div className="p-8 mt-6 bg-gray-50 border-t border-gray-100">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="text-left">
-                            <h3 className="text-xl font-black uppercase leading-tight">{studentData.student_name}</h3>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mt-1">
-                                Roll: <span className="text-orange-600 font-black">{rollNo}</span>
-                            </p>
+                <div className="p-8 mt-4 bg-gray-50 border-t border-gray-100">
+                    <div className="flex justify-between items-center mb-6 px-1">
+                        <div>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Registration ID</p>
+                            <h4 className="text-lg font-black text-slate-800 uppercase mt-1">{rollNo}</h4>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ring-1 ${studentData.status === 'ACTIVE' ? 'bg-green-100 text-green-700 ring-green-200' : 'bg-red-100 text-red-700 ring-red-200'
+                        <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase ring-2 ${studentData.status === 'ACTIVE' ? 'bg-green-100 text-green-700 ring-green-50' : 'bg-red-100 text-red-700 ring-red-50'
                             }`}>
                             {studentData.status}
                         </div>
                     </div>
 
                     {/* FEATURE 8: CANTEEN WALLET DISPLAY */}
-                    <div className="bg-slate-900 rounded-2xl p-5 flex items-center justify-between border-b-4 border-orange-500 shadow-xl group hover:scale-[1.02] transition-transform">
-                        <div className="flex items-center gap-4">
-                            <div className="bg-orange-500 p-2.5 rounded-xl text-white shadow-lg shadow-orange-500/30">
-                                <Wallet size={20} />
+                    <div className="bg-slate-900 rounded-3xl p-6 flex items-center justify-between border-b-8 border-orange-500 shadow-2xl group hover:scale-[1.03] transition-all cursor-pointer">
+                        <div className="flex items-center gap-5">
+                            <div className="bg-orange-500 p-3 rounded-2xl text-white shadow-xl shadow-orange-500/40 group-hover:rotate-12 transition-transform">
+                                <Wallet size={24} />
                             </div>
                             <div>
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-1">Canteen Wallet</p>
-                                <p className="text-xl font-black text-white leading-none">
-                                    ₹{wallet.balance.toFixed(2)}
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-1">Total Balance</p>
+                                <p className="text-2xl font-black text-white leading-none">
+                                    ₹{(wallet?.balance || 0).toFixed(2)}
                                 </p>
                             </div>
                         </div>

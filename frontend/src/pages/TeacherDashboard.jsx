@@ -58,10 +58,23 @@ const TeacherDashboard = () => {
     const [scanResult, setScanResult] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
 
+    // Computed effective subject (after all state hooks)
+    const effectiveSubject = useMemo(() => mySubject || {
+        id: 'DS',
+        name: 'Data Structures',
+        teacherName: user?.email?.split('@')[0] || 'Faculty',
+        ownerEmail: user?.email,
+        units: [
+            { id: 'DS_U1', title: 'Linear Structures' },
+            { id: 'DS_U2', title: 'Non-Linear Structures' },
+            { id: 'DS_U3', title: 'Advanced Algorithms' }
+        ]
+    }, [mySubject, user?.email]);
+
     // --- 📊 BACKEND SYNC ---
     const fetchConfig = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8009/get-config');
+            const response = await fetch('http://127.0.0.1:8001/get-config');
             if (response.ok) {
                 const data = await response.json();
                 setPortalConfig(data);
@@ -71,7 +84,7 @@ const TeacherDashboard = () => {
 
     const saveConfig = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8009/update-config', {
+            const response = await fetch('http://127.0.0.1:8001/update-config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -94,7 +107,7 @@ const TeacherDashboard = () => {
     const fetchStudentProgress = async () => {
         setLoadingProgress(true);
         try {
-            const response = await fetch('http://127.0.0.1:8009/get-all-progress');
+            const response = await fetch('http://127.0.0.1:8001/get-all-progress');
             if (!response.ok) throw new Error("Server error");
             const data = await response.json();
             setStudentResults(Array.isArray(data) ? data : []);
@@ -129,8 +142,8 @@ const TeacherDashboard = () => {
 
         try {
             const endpoint = email
-                ? `http://127.0.0.1:8009/delete-student-progress/${email}`
-                : `http://127.0.0.1:8009/clear-all-progress`;
+                ? `http://127.0.0.1:8001/delete-student-progress/${email}`
+                : `http://127.0.0.1:8001/clear-all-progress`;
 
             const response = await fetch(endpoint, { method: 'DELETE' });
             if (response.ok) {
@@ -164,16 +177,7 @@ const TeacherDashboard = () => {
         return Object.values(studentMap).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     }, [studentResults]);
 
-    if (!mySubject) {
-        return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
-                <div className="text-center p-10 bg-gray-800 rounded-2xl border-2 border-red-600/30">
-                    <AlertCircle size={50} className="text-red-600 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold uppercase tracking-tight">Access Denied</h2>
-                </div>
-            </div>
-        );
-    }
+    // Note: Removed Access Denied check - all teachers can access portal
 
     const handlePublish = async (e) => {
         e.preventDefault();
@@ -181,35 +185,64 @@ const TeacherDashboard = () => {
 
         setUploadStatus('processing');
 
-        const formData = new FormData();
-        formData.append('file', fileObject);
-        formData.append('unit', portalConfig.unitNames[`unit${selectedUnit}`]);
-
         try {
-            const aiResponse = await fetch('http://127.0.0.1:8009/generate-quiz', {
+            const materialId = `unit_${selectedUnit}_${Date.now()}`;
+
+            const formData = new FormData();
+            formData.append('file', fileObject);
+            formData.append('unit', portalConfig.unitNames[`unit${selectedUnit}`]);
+            formData.append('materialId', materialId);
+
+            // 1. Generate Quiz on Backend
+            const aiResponse = await fetch('http://127.0.0.1:8001/generate-quiz', {
                 method: 'POST',
                 body: formData
             });
 
             if (!aiResponse.ok) throw new Error("AI Backend failed to process PDF.");
+            const aiData = await aiResponse.json();
+            if (aiData.error) throw new Error(aiData.error);
 
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
+                const dataURL = reader.result;
                 const existingMaterials = JSON.parse(localStorage.getItem('published_materials') || '{}');
-                const newMaterialId = `mat_${selectedUnit}_${Date.now()}`;
 
-                existingMaterials[`unit_${selectedUnit}`] = {
-                    materialId: newMaterialId,
+                const uploadObj = {
+                    materialId: materialId,
                     name: fileName,
                     tag: selectedTag,
                     date: new Date().toLocaleDateString(),
                     title: portalConfig.unitNames[`unit${selectedUnit}`],
-                    subjectId: mySubject.id,
-                    fileData: reader.result,
+                    subjectId: effectiveSubject.id,
+                    fileData: dataURL,
                     mime: fileObject?.type || 'application/pdf',
                     uploadedAt: new Date().toISOString()
                 };
 
+                // 2. Sync Material ID and Metadata to Backend for all students
+                const syncFormData = new FormData();
+                syncFormData.append('id', uploadObj.materialId);
+                syncFormData.append('name', uploadObj.name);
+                syncFormData.append('tag', uploadObj.tag);
+                syncFormData.append('title', uploadObj.title);
+                syncFormData.append('date', uploadObj.date);
+                syncFormData.append('size', fileObject.size);
+                syncFormData.append('subjectId', uploadObj.subjectId);
+                syncFormData.append('uploadedAt', uploadObj.uploadedAt);
+                syncFormData.append('fileData', uploadObj.fileData);
+
+                try {
+                    await fetch('http://127.0.0.1:8001/upload-material', {
+                        method: 'POST',
+                        body: syncFormData
+                    });
+                } catch (syncErr) {
+                    console.error("Backend material sync failed:", syncErr);
+                }
+
+                // 3. Update Local Storage for immediate UI feedback
+                existingMaterials[`unit_${selectedUnit}`] = uploadObj;
                 localStorage.setItem('published_materials', JSON.stringify(existingMaterials));
                 window.dispatchEvent(new Event('storage'));
 
@@ -218,14 +251,14 @@ const TeacherDashboard = () => {
                     setUploadStatus('idle');
                     setFileName('');
                     setFileObject(null);
-                    alert("🚀 Material Published!");
+                    alert("🚀 Material Published Successfully to Students!");
                 }, 1000);
             };
             reader.readAsDataURL(fileObject);
 
         } catch (err) {
             setUploadStatus('idle');
-            alert(`Upload Failed: ${err.message}`);
+            alert(`Upload Failed: ${err.message}. Ensure Python backend is running on port 8001.`);
         }
     };
 

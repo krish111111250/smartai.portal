@@ -22,7 +22,13 @@ async def generate_student_qr(roll_no: str, db: Session = Depends(database.get_d
         raise HTTPException(status_code=403, detail="ACCOUNT SUSPENDED")
 
     token = f"LENS_{clean_roll}_{uuid.uuid4().hex[:8]}_{int(time.time())}"
-    return {"token": token, "student_name": student.name, "status": student.physical_id_status.upper()}
+    return {
+        "token": token, 
+        "student_name": student.name, 
+        "dept": student.dept,
+        "photo": student.photo_b64,
+        "status": student.physical_id_status.upper()
+    }
 
 # --- 🟡 FEATURE 9: GET WALLET BALANCE ---
 @router.get("/wallet/{roll_no}")
@@ -206,6 +212,16 @@ async def get_collection_stats(db: Session = Depends(database.get_db)):
         models.WalletTransaction.transaction_type == "CREDIT"
     ).scalar() or 0
     return {"total_today": float(total)}
+
+# --- 📊 VENDOR SALES STATS ---
+@router.get("/vendor/sales-stats")
+async def get_vendor_stats(db: Session = Depends(database.get_db)):
+    today = datetime.now().date()
+    total = db.query(func.sum(models.WalletTransaction.amount)).filter(
+        func.date(models.WalletTransaction.timestamp) == today,
+        models.WalletTransaction.transaction_type == "DEBIT"
+    ).scalar() or 0
+    return {"total_sales_today": float(total)}
 
 # --- 🛒 NEW: CANTEEN PURCHASE (DEBIT) ---
 @router.post("/vendor/purchase")

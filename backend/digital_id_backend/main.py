@@ -2,9 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
 from .router import router as id_router
+from .seed import seed_data
 
 # Create the database tables in Postgres automatically
 Base.metadata.create_all(bind=engine)
+# 🔍 AUTO-SEED: Ensure we have demo data for the "No Error" experience
+try:
+    seed_data()
+except Exception as e:
+    print(f"Seed Warning: {e}")
 
 app = FastAPI(title="Digital Student ID Portal")
 

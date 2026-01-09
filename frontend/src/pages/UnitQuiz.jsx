@@ -72,7 +72,7 @@ const UnitQuiz = () => {
             };
 
             // 1. Save to Quiz Backend
-            await fetch('http://127.0.0.1:8009/save-progress', {
+            await fetch('http://127.0.0.1:8001/save-progress', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -128,7 +128,7 @@ const UnitQuiz = () => {
         const runGeneration = async () => {
             try {
                 // 🛠️ NEW: TRY TO FETCH PRE-GENERATED QUIZ FIRST
-                const fetchRes = await fetch(`http://127.0.0.1:8009/get-quiz/${materialId}`);
+                const fetchRes = await fetch(`http://127.0.0.1:8001/get-quiz/${materialId}`);
                 if (fetchRes.ok) {
                     const data = await fetchRes.json();
                     if (data.quiz && Array.isArray(data.quiz)) {
@@ -154,7 +154,7 @@ const UnitQuiz = () => {
                 formData.append('unit', unitFromUrl.toString());
                 formData.append('materialId', materialId);
 
-                const aiResponse = await fetch('http://127.0.0.1:8009/generate-quiz', {
+                const aiResponse = await fetch('http://127.0.0.1:8001/generate-quiz', {
                     method: 'POST',
                     body: formData
                 });

@@ -10,11 +10,21 @@ def seed_data():
     if db.query(models.Student).count() == 0:
         test_students = [
             models.Student(
+                name="Saraswathi N",
+                roll_no="SNS1CSD",
+                dept="Computer Science & Design",
+                apaar_id="APAAR-SNS001",
+                email="sns1csd@sns.edu",
+                wallet_balance=500.00,
+                photo_b64="https://static.vecteezy.com/system/resources/previews/005/544/718/original/university-student-graduate-icon-free-vector.jpg"
+            ),
+            models.Student(
                 name="Rahul Sharma",
                 roll_no="22CSE01",
                 dept="Computer Science",
                 apaar_id="APAAR-12345",
                 email="22cse01@sns.edu",
+                wallet_balance=250.00,
                 photo_b64="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
             ),
             models.Student(
@@ -23,6 +33,7 @@ def seed_data():
                 dept="Electronics",
                 apaar_id="APAAR-67890",
                 email="22ece45@sns.edu",
+                wallet_balance=100.00,
                 photo_b64="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
             )
         ]

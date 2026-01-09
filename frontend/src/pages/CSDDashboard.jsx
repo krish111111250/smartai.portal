@@ -31,7 +31,7 @@ const CSDDashboard = () => {
     useEffect(() => {
         const fetchPortalConfig = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8009/get-config');
+                const response = await fetch('http://127.0.0.1:8001/get-config');
                 if (response.ok) {
                     const data = await response.json();
                     setPortalConfig(data);

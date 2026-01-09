@@ -1,0 +1,14 @@
+DEBUG: 1
+DEBUG: 2
+DEBUG: 3
+DEBUG: 4
+DEBUG: 5
+DEBUG: 6
+DEBUG: 7
+DEBUG: 8
+DEBUG: 9
+Traceback (most recent call last):
+  File "/Users/navaneethkavinm/Desktop/sns-smart-portal/backend/quiz_backend/main.py", line 27, in <module>
+    #     print(f"NLTK Download Warning: {e}")
+                                           ^^^
+NameError: name 'ssl' is not defined. Did you forget to import 'ssl'?

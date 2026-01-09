@@ -4,12 +4,7 @@ import re
 import os
 import json
 import uvicorn
-# import spacy
-# import nltk
 import ssl # Required for the Mac SSL bypass
-# from rake_nltk import Rake
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -120,6 +115,9 @@ def get_distractors_offline(target_word, all_keywords, corpus, n=3):
         return ["Logic Flow", "System Node", "Data Base", "Process Unit"]
     
     try:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+        
         vectorizer = TfidfVectorizer().fit([corpus])
         vectors = vectorizer.transform(all_keywords)
         target_idx = all_keywords.index(target_word)
@@ -188,7 +186,9 @@ async def upload_material(
     return {"status": "success"}
 
 @app.post("/generate-quiz")
-async def generate_quiz(file: UploadFile = File(...), unit: str = Form(...), materialId: str = Form(...)):
+async def generate_quiz(file: UploadFile = File(...), unit: str = Form(...), materialId: str = Form(None)):
+    if not materialId:
+        materialId = f"unit_{unit.lower().replace(' ', '_')}_{int(time.time())}"
     try:
         pdf_bytes = await file.read()
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")

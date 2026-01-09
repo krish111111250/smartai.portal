@@ -36,52 +36,79 @@ const TeacherUpload = () => {
   const [uploadData, setUploadData] = useState({ unitNo: 1, tag: '2M', fileName: '', fileObject: null });
   const [status, setStatus] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loadingState, setLoadingState] = useState('loading'); // loading | ready | error
 
   // 1. Fetch Config from Backend
   const fetchConfig = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8009/get-config');
-      if (response.ok) {
-        const data = await response.json();
-        setPortalConfig(data);
+      const response = await fetch('http://127.0.0.1:8001/get-config');
+      if (!response.ok) {
+        throw new Error(`Config API returned ${response.status}`);
       }
-    } catch (err) { console.error("Config fetch failed"); }
+      const data = await response.json();
+      setPortalConfig(data);
+      return true;
+    } catch (err) {
+      console.error("Config fetch failed:", err);
+      setErrorMessage("Failed to connect to AI Quiz Backend (Port 8001). Please ensure the Python backend is running.");
+      setLoadingState('error');
+      return false;
+    }
   };
 
   const loadMaterials = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8009/get-published-materials');
-      if (response.ok) {
-        const data = await response.json();
-        const map = {};
-        Object.values(data).forEach(file => {
-          const match = file.id.match(/^unit_(\d+)/);
-          if (match) map[`unit_${match[1]}`] = file;
-        });
-        setPublishedMaterials(map);
+      const response = await fetch('http://127.0.0.1:8001/get-published-materials');
+      if (!response.ok) {
+        throw new Error(`Materials API returned ${response.status}`);
       }
+      const data = await response.json();
+      const map = {};
+      Object.values(data).forEach(file => {
+        const match = file.id.match(/^unit_(\d+)/);
+        if (match) map[`unit_${match[1]}`] = file;
+      });
+      setPublishedMaterials(map);
+      return true;
     } catch (err) {
       console.error("Load materials failed", err);
-      // Fallback
-      const db = await initDB();
-      const all = await db.getAll('materials');
-      const map = {};
-      all.forEach(item => { map[item.id] = item; });
-      setPublishedMaterials(map);
+      // Fallback to IndexedDB
+      try {
+        const db = await initDB();
+        const all = await db.getAll('materials');
+        const map = {};
+        all.forEach(item => { map[item.id] = item; });
+        setPublishedMaterials(map);
+        return true;
+      } catch (dbErr) {
+        console.error("IndexedDB fallback failed:", dbErr);
+        return false;
+      }
     }
   };
 
   useEffect(() => {
-    fetchConfig();
-    loadMaterials();
-    if (!window.pdfjsLib) {
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.0/pdf.min.js';
-      script.onload = () => {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.0/pdf.worker.min.js';
-      };
-      document.head.appendChild(script);
-    }
+    const initializePortal = async () => {
+      setLoadingState('loading');
+      const configSuccess = await fetchConfig();
+      const materialsSuccess = await loadMaterials();
+
+      if (configSuccess && materialsSuccess) {
+        setLoadingState('ready');
+      }
+
+      // Load PDF.js library
+      if (!window.pdfjsLib) {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.0/pdf.min.js';
+        script.onload = () => {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.0/pdf.worker.min.js';
+        };
+        document.head.appendChild(script);
+      }
+    };
+
+    initializePortal();
   }, []);
 
   const notifyStorageChange = () => {
@@ -121,7 +148,7 @@ const TeacherUpload = () => {
       formData.append('unit', portalConfig.unitNames[`unit${uploadData.unitNo}`]);
       formData.append('materialId', materialId);
 
-      const backendResponse = await fetch('http://127.0.0.1:8009/generate-quiz', {
+      const backendResponse = await fetch('http://127.0.0.1:8001/generate-quiz', {
         method: 'POST',
         body: formData,
       });
@@ -163,7 +190,7 @@ const TeacherUpload = () => {
         materialFormData.append('uploadedAt', uploadObj.uploadedAt);
 
         try {
-          await fetch('http://127.0.0.1:8009/upload-material', {
+          await fetch('http://127.0.0.1:8001/upload-material', {
             method: 'POST',
             body: materialFormData,
           });
@@ -204,7 +231,7 @@ const TeacherUpload = () => {
     setPortalConfig(updatedConfig);
 
     try {
-      await fetch('http://127.0.0.1:8009/update-config', {
+      await fetch('http://127.0.0.1:8001/update-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedConfig),
@@ -227,6 +254,39 @@ const TeacherUpload = () => {
   };
 
   if (!mySubject) return null;
+
+  // LOADING STATE
+  if (loadingState === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col items-center justify-center font-sans">
+        <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Connecting to AI Backend...</p>
+      </div>
+    );
+  }
+
+  // ERROR STATE
+  if (loadingState === 'error') {
+    return (
+      <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col items-center justify-center p-8 font-sans">
+        <div className="max-w-md w-full bg-gray-900 p-8 rounded-3xl border border-red-600/50">
+          <AlertCircle className="text-red-600 mx-auto mb-4" size={48} />
+          <h2 className="text-xl font-black uppercase text-center mb-4">Backend Connection Failed</h2>
+          <p className="text-sm text-gray-400 text-center mb-6">{errorMessage}</p>
+          <div className="bg-gray-950 p-4 rounded-xl mb-6">
+            <p className="text-xs font-mono text-gray-500 mb-2">Expected Backend: http://127.0.0.1:8001</p>
+            <p className="text-xs font-mono text-yellow-500">Please start: python backend/quiz_backend/main.py</p>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full py-3 bg-red-600 hover:bg-red-700 rounded-xl font-bold uppercase text-xs tracking-wider transition-all"
+          >
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col font-sans">
