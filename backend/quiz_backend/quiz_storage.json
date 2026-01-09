@@ -1,0 +1,432 @@
+{
+  "test_123": [
+    {
+      "q": "What topic is covered in Data Structures?",
+      "options": [
+        "Data Structures",
+        "Algorithms",
+        "Networks",
+        "Databases"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is a linear data structure?",
+      "options": [
+        "Array",
+        "Tree",
+        "Graph",
+        "Hash Table"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is a non-linear structure?",
+      "options": [
+        "Tree",
+        "Stack",
+        "Queue",
+        "Array"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What is the time complexity of binary search?",
+      "options": [
+        "O(log n)",
+        "O(n)",
+        "O(n\u00b2)",
+        "O(1)"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which sorting algorithm is fastest on average?",
+      "options": [
+        "Quick Sort",
+        "Bubble Sort",
+        "Selection Sort",
+        "Insertion Sort"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What data structure uses FIFO?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Tree",
+        "Graph"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What data structure uses LIFO?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Array",
+        "Linked List"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is used for BFS traversal?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Tree",
+        "Array"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is used for DFS traversal?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Array",
+        "Linked List"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What is the root node in a tree?",
+      "options": [
+        "Top node",
+        "Bottom node",
+        "Middle node",
+        "Leaf node"
+      ],
+      "correct": 0
+    }
+  ],
+  "mat_1_1767892174587": [
+    {
+      "q": "What topic is covered in 1?",
+      "options": [
+        "Data Structures",
+        "Algorithms",
+        "Networks",
+        "Databases"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is a linear data structure?",
+      "options": [
+        "Array",
+        "Tree",
+        "Graph",
+        "Hash Table"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is a non-linear structure?",
+      "options": [
+        "Tree",
+        "Stack",
+        "Queue",
+        "Array"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What is the time complexity of binary search?",
+      "options": [
+        "O(log n)",
+        "O(n)",
+        "O(n\u00b2)",
+        "O(1)"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which sorting algorithm is fastest on average?",
+      "options": [
+        "Quick Sort",
+        "Bubble Sort",
+        "Selection Sort",
+        "Insertion Sort"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What data structure uses FIFO?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Tree",
+        "Graph"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What data structure uses LIFO?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Array",
+        "Linked List"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is used for BFS traversal?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Tree",
+        "Array"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is used for DFS traversal?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Array",
+        "Linked List"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What is the root node in a tree?",
+      "options": [
+        "Top node",
+        "Bottom node",
+        "Middle node",
+        "Leaf node"
+      ],
+      "correct": 0
+    }
+  ],
+  "mat_1_1767893007464": [
+    {
+      "q": "What topic is covered in 1?",
+      "options": [
+        "Data Structures",
+        "Algorithms",
+        "Networks",
+        "Databases"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is a linear data structure?",
+      "options": [
+        "Array",
+        "Tree",
+        "Graph",
+        "Hash Table"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is a non-linear structure?",
+      "options": [
+        "Tree",
+        "Stack",
+        "Queue",
+        "Array"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What is the time complexity of binary search?",
+      "options": [
+        "O(log n)",
+        "O(n)",
+        "O(n\u00b2)",
+        "O(1)"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which sorting algorithm is fastest on average?",
+      "options": [
+        "Quick Sort",
+        "Bubble Sort",
+        "Selection Sort",
+        "Insertion Sort"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What data structure uses FIFO?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Tree",
+        "Graph"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What data structure uses LIFO?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Array",
+        "Linked List"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is used for BFS traversal?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Tree",
+        "Array"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which is used for DFS traversal?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Array",
+        "Linked List"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "What is the root node in a tree?",
+      "options": [
+        "Top node",
+        "Bottom node",
+        "Middle node",
+        "Leaf node"
+      ],
+      "correct": 0
+    }
+  ],
+  "test_ai_quiz": [
+    {
+      "q": "What is the primary focus of Data Structures?",
+      "options": [
+        "Concept Identification",
+        "System Analysis",
+        "Implementation",
+        "Design"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which of these is a key component mentioned in the material?",
+      "options": [
+        "Input/Output",
+        "Processing",
+        "Storage",
+        "All of the above"
+      ],
+      "correct": 3
+    }
+  ],
+  "test_accurate_final": [
+    {
+      "q": "According to the material, complete the following: \"It is a data structure ________ of a collection of nodes which together represent a sequence.\"",
+      "options": [
+        "Linear",
+        "Linked",
+        "Instead",
+        "Consisting"
+      ],
+      "correct": 3
+    },
+    {
+      "q": "According to the material, complete the following: \"A linked list is a linear collection of data elements whose order is not ________ by their physical placement in memory.\"",
+      "options": [
+        "Linear",
+        "Given",
+        "Represent",
+        "Words"
+      ],
+      "correct": 1
+    },
+    {
+      "q": "According to the material, complete the following: \"It is a data structure consisting of a collection of nodes which together represent a ________.\"",
+      "options": [
+        "Whose",
+        "Instead",
+        "Sequence",
+        "Collection"
+      ],
+      "correct": 2
+    },
+    {
+      "q": "According to the material, complete the following: \"In its most basic form, each node contains: data, and a reference (in other words, a link) to the next node in the ________.\"",
+      "options": [
+        "Consisting",
+        "Together",
+        "Sequence",
+        "Structure"
+      ],
+      "correct": 2
+    },
+    {
+      "q": "According to the material, complete the following: \"A linked list is a linear ________ of data elements whose order is not given by their physical placement in memory.\"",
+      "options": [
+        "Contains",
+        "Points",
+        "Collection",
+        "Basic"
+      ],
+      "correct": 2
+    },
+    {
+      "q": "Which concept is essential for Data Structures?",
+      "options": [
+        "Systematic Approach",
+        "Random Analysis",
+        "Manual Entry",
+        "Fixed Design"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which concept is essential for Data Structures?",
+      "options": [
+        "Systematic Approach",
+        "Random Analysis",
+        "Manual Entry",
+        "Fixed Design"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which concept is essential for Data Structures?",
+      "options": [
+        "Systematic Approach",
+        "Random Analysis",
+        "Manual Entry",
+        "Fixed Design"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which concept is essential for Data Structures?",
+      "options": [
+        "Systematic Approach",
+        "Random Analysis",
+        "Manual Entry",
+        "Fixed Design"
+      ],
+      "correct": 0
+    },
+    {
+      "q": "Which concept is essential for Data Structures?",
+      "options": [
+        "Systematic Approach",
+        "Random Analysis",
+        "Manual Entry",
+        "Fixed Design"
+      ],
+      "correct": 0
+    }
+  ]
+}

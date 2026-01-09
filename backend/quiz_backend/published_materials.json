@@ -1,0 +1,14 @@
+{
+  "test_123": {
+    "id": "test_123",
+    "name": "Test Material",
+    "tag": "2M",
+    "title": "Test Title",
+    "date": "2026-01-08",
+    "size": 1000,
+    "subjectId": "DS_01",
+    "uploadedAt": "2026-01-08T22:00:00",
+    "fileData": "data:application/pdf",
+    "extractedText": "Test content"
+  }
+}
