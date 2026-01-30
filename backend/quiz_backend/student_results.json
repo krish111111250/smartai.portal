@@ -18,5 +18,15 @@
         "total": 2,
         "status": "Fail",
         "timestamp": "2026-01-09T11:58:13"
+    },
+    {
+        "email": "sns1csd@sns.edu",
+        "unit": "Unit 1",
+        "unlock_key": "unit_1_passed",
+        "materialId": "unit_1_default",
+        "score": 1,
+        "total": 2,
+        "status": "Pass",
+        "timestamp": "2026-01-09T13:59:25"
     }
 ]

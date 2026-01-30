@@ -74,7 +74,7 @@ const TeacherDashboard = () => {
     // --- 📊 BACKEND SYNC ---
     const fetchConfig = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8001/get-config');
+            const response = await fetch('http://127.0.0.1:8009/get-config');
             if (response.ok) {
                 const data = await response.json();
                 setPortalConfig(data);
@@ -84,7 +84,7 @@ const TeacherDashboard = () => {
 
     const saveConfig = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8001/update-config', {
+            const response = await fetch('http://127.0.0.1:8009/update-config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -107,7 +107,7 @@ const TeacherDashboard = () => {
     const fetchStudentProgress = async () => {
         setLoadingProgress(true);
         try {
-            const response = await fetch('http://127.0.0.1:8001/get-all-progress');
+            const response = await fetch('http://127.0.0.1:8009/get-all-progress');
             if (!response.ok) throw new Error("Server error");
             const data = await response.json();
             setStudentResults(Array.isArray(data) ? data : []);
@@ -119,19 +119,33 @@ const TeacherDashboard = () => {
     };
 
     // --- 🛡️ QR VERIFICATION LOGIC ---
-    const handleScan = async (text) => {
-        if (!text) return;
-        setIsScanning(false);
+    const handleScan = async (scanResult) => {
+        // Handle both raw strings and array/object formats from the scanner library
+        const text = Array.isArray(scanResult) ? scanResult[0]?.rawValue : (scanResult?.rawValue || scanResult);
+
+        if (!text || text === scanResult?.message) return; // Ignore if no text or if it's already an error message
+
+        console.log("Teacher Scanner Scanned:", text);
+
+        // Show loading state immediately
+        setScanResult({ loading: true });
+
         try {
             const formData = new FormData();
             formData.append('token', text);
 
             const response = await axios.post(`http://127.0.0.1:8002/api/student-id/verify-qr`, formData);
+
+            // Success! Stop scanning and show result
+            setIsScanning(false);
             setScanResult({ success: true, data: response.data.student });
         } catch (err) {
+            console.error("Verification Scan Error:", err);
+            // Even on error, we stop scanning so the user can see the error message
+            setIsScanning(false);
             setScanResult({
                 success: false,
-                message: err.response?.data?.detail || "Invalid or Expired QR Code"
+                message: err.response?.data?.detail || "Invalid or Expired QR Code. Please regenerate student ID."
             });
         }
     };
@@ -142,8 +156,8 @@ const TeacherDashboard = () => {
 
         try {
             const endpoint = email
-                ? `http://127.0.0.1:8001/delete-student-progress/${email}`
-                : `http://127.0.0.1:8001/clear-all-progress`;
+                ? `http://127.0.0.1:8009/delete-student-progress/${email}`
+                : `http://127.0.0.1:8009/clear-all-progress`;
 
             const response = await fetch(endpoint, { method: 'DELETE' });
             if (response.ok) {
@@ -194,7 +208,7 @@ const TeacherDashboard = () => {
             formData.append('materialId', materialId);
 
             // 1. Generate Quiz on Backend
-            const aiResponse = await fetch('http://127.0.0.1:8001/generate-quiz', {
+            const aiResponse = await fetch('http://127.0.0.1:8009/generate-quiz', {
                 method: 'POST',
                 body: formData
             });
@@ -233,7 +247,7 @@ const TeacherDashboard = () => {
                 syncFormData.append('fileData', uploadObj.fileData);
 
                 try {
-                    await fetch('http://127.0.0.1:8001/upload-material', {
+                    await fetch('http://127.0.0.1:8009/upload-material', {
                         method: 'POST',
                         body: syncFormData
                     });
@@ -324,7 +338,15 @@ const TeacherDashboard = () => {
 
                                 <div className="aspect-square bg-black flex items-center justify-center relative">
                                     {isScanning ? (
-                                        <Scanner onScan={(result) => handleScan(result[0]?.rawValue)} />
+                                        <Scanner
+                                            onScan={handleScan}
+                                            onError={(error) => {
+                                                console.error("Scanner Error:", error);
+                                                alert("Camera Error: " + error?.message);
+                                                setIsScanning(false);
+                                            }}
+                                            components={{ audio: false, torch: false }}
+                                        />
                                     ) : (
                                         <div className="text-center p-10">
                                             <ScanLine size={60} className="text-gray-700 mx-auto mb-4" />
@@ -340,7 +362,13 @@ const TeacherDashboard = () => {
                             </div>
 
                             <div className="space-y-6">
-                                {scanResult ? (
+                                {scanResult?.loading ? (
+                                    <div className="bg-gray-800/50 p-12 rounded-3xl border-2 border-orange-500/30 flex flex-col items-center justify-center text-center animate-pulse">
+                                        <RefreshCw size={48} className="text-orange-500 animate-spin mb-4" />
+                                        <h3 className="text-xl font-black text-white uppercase italic">Verifying ID</h3>
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest">Checking Campus Database...</p>
+                                    </div>
+                                ) : scanResult ? (
                                     <div className={`p-8 rounded-3xl border-2 flex flex-col items-center text-center ${scanResult.success ? 'bg-green-500/10 border-green-500/50' : 'bg-red-500/10 border-red-500/50'}`}>
                                         {scanResult.success ? (
                                             <>
@@ -383,7 +411,7 @@ const TeacherDashboard = () => {
                     <>
                         <header className="mb-10 border-b-2 border-gray-800 pb-6 flex justify-between items-end">
                             <div>
-                                <h1 className="text-3xl font-bold text-white uppercase tracking-tight">{mySubject.name}</h1>
+                                <h1 className="text-3xl font-bold text-white uppercase tracking-tight">{effectiveSubject.name}</h1>
                                 <div className="flex items-center gap-4 mt-2">
                                     {isEditingProfile ? (
                                         <input className="bg-gray-900 border-2 border-red-600 rounded px-2 py-1 text-sm font-bold text-white" value={portalConfig.facultyName} onChange={(e) => setPortalConfig({ ...portalConfig, facultyName: e.target.value })} />

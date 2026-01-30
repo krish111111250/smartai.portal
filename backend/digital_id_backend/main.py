@@ -32,4 +32,5 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8002) # Port 8002 so it doesn't clash with Quiz
+    # Proper module path when running from 'backend/' directory
+    uvicorn.run("digital_id_backend.main:app", host="127.0.0.1", port=8002, reload=True)

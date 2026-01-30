@@ -41,7 +41,7 @@ const TeacherUpload = () => {
   // 1. Fetch Config from Backend
   const fetchConfig = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8001/get-config');
+      const response = await fetch('http://127.0.0.1:8009/get-config');
       if (!response.ok) {
         throw new Error(`Config API returned ${response.status}`);
       }
@@ -50,7 +50,7 @@ const TeacherUpload = () => {
       return true;
     } catch (err) {
       console.error("Config fetch failed:", err);
-      setErrorMessage("Failed to connect to AI Quiz Backend (Port 8001). Please ensure the Python backend is running.");
+      setErrorMessage("Failed to connect to AI Quiz Backend (Port 8009). Please ensure the Python backend is running.");
       setLoadingState('error');
       return false;
     }
@@ -58,7 +58,7 @@ const TeacherUpload = () => {
 
   const loadMaterials = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8001/get-published-materials');
+      const response = await fetch('http://127.0.0.1:8009/get-published-materials');
       if (!response.ok) {
         throw new Error(`Materials API returned ${response.status}`);
       }
@@ -148,7 +148,7 @@ const TeacherUpload = () => {
       formData.append('unit', portalConfig.unitNames[`unit${uploadData.unitNo}`]);
       formData.append('materialId', materialId);
 
-      const backendResponse = await fetch('http://127.0.0.1:8001/generate-quiz', {
+      const backendResponse = await fetch('http://127.0.0.1:8009/generate-quiz', {
         method: 'POST',
         body: formData,
       });
@@ -190,7 +190,7 @@ const TeacherUpload = () => {
         materialFormData.append('uploadedAt', uploadObj.uploadedAt);
 
         try {
-          await fetch('http://127.0.0.1:8001/upload-material', {
+          await fetch('http://127.0.0.1:8009/upload-material', {
             method: 'POST',
             body: materialFormData,
           });
@@ -231,7 +231,7 @@ const TeacherUpload = () => {
     setPortalConfig(updatedConfig);
 
     try {
-      await fetch('http://127.0.0.1:8001/update-config', {
+      await fetch('http://127.0.0.1:8009/update-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedConfig),
@@ -274,7 +274,7 @@ const TeacherUpload = () => {
           <h2 className="text-xl font-black uppercase text-center mb-4">Backend Connection Failed</h2>
           <p className="text-sm text-gray-400 text-center mb-6">{errorMessage}</p>
           <div className="bg-gray-950 p-4 rounded-xl mb-6">
-            <p className="text-xs font-mono text-gray-500 mb-2">Expected Backend: http://127.0.0.1:8001</p>
+            <p className="text-xs font-mono text-gray-500 mb-2">Expected Backend: http://127.0.0.1:8009</p>
             <p className="text-xs font-mono text-yellow-500">Please start: python backend/quiz_backend/main.py</p>
           </div>
           <button

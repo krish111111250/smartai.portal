@@ -19,7 +19,7 @@ const CourseMaterials = () => {
 
     const fetchConfig = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8001/get-config');
+            const response = await fetch('http://127.0.0.1:8009/get-config');
             if (response.ok) {
                 const data = await response.json();
                 setPortalConfig(data);
@@ -37,7 +37,7 @@ const CourseMaterials = () => {
 
             // 1. Try to fetch from Backend
             try {
-                const response = await fetch('http://127.0.0.1:8001/get-published-materials');
+                const response = await fetch('http://127.0.0.1:8009/get-published-materials');
                 if (response.ok) {
                     const data = await response.json();
                     // Map materials to UI slots
