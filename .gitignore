@@ -1,0 +1,12 @@
+**/node_modules/
+**/venv/
+**/quiz_env/
+**/new_face_env/
+**/__pycache__/
+**/_pycache_/
+**/dist/
+.DS_Store
+.env
+*.db
+*.log
+*.pkl
